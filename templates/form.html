@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADIME Note Processor</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --light-gray: #f5f7f9;
+            --border-radius: 6px;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: var(--light-gray);
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+        }
+        
+        h1 {
+            color: var(--secondary-color);
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+        
+        .upload-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .form-section {
+            margin-bottom: 20px;
+        }
+        
+        .form-section h2 {
+            color: var(--primary-color);
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        
+        .upload-methods {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .upload-box {
+            border: 2px dashed #ccc;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-box:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(52, 152, 219, 0.05);
+        }
+        
+        .upload-box p {
+            color: #666;
+            margin: 10px 0;
+        }
+        
+        .upload-icon {
+            font-size: 48px;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 200px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-family: inherit;
+            resize: vertical;
+        }
+        
+        .submit-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            font-weight: 500;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            align-self: center;
+            margin-top: 15px;
+        }
+        
+        .submit-btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .form-tab {
+            display: flex;
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+            border-radius: 8px 8px 0 0;
+        }
+        
+        .tab-button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+            font-size: 17px;
+            flex: 1;
+        }
+        
+        .tab-button:hover {
+            background-color: #ddd;
+        }
+        
+        .tab-button.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            background-color: white;
+        }
+        
+        .sample-note {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-left: 4px solid var(--primary-color);
+            margin-top: 15px;
+            font-size: 14px;
+            overflow-y: auto;
+            max-height: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ADIME Note Processor</h1>
+        <div class="upload-form">
+            <div class="form-tab">
+                <button class="tab-button active" onclick="openTab(event, 'upload-tab')">Upload File</button>
+                <button class="tab-button" onclick="openTab(event, 'paste-tab')">Paste Text</button>
+                <button class="tab-button" onclick="openTab(event, 'sample-tab')">Sample Note</button>
+            </div>
+            
+            <form action="/upload-adime/" method="post" enctype="multipart/form-data">
+                <div id="upload-tab" class="tab-content" style="display: block;">
+                    <div class="form-section">
+                        <div class="upload-box" id="upload-box">
+                            <div class="upload-icon">📁</div>
+                            <h3>Upload ADIME Note</h3>
+                            <p>Drag & drop your file here or click to browse</p>
+                            <p class="small">Accepts .txt, .doc, .docx files</p>
+                            <input type="file" name="file" id="file-input" class="file-input" accept=".txt,.doc,.docx">
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="paste-tab" class="tab-content">
+                    <div class="form-section">
+                        <h2>Paste your ADIME note text</h2>
+                        <textarea name="text_content" placeholder="Copy and paste your ADIME note here..."></textarea>
+                    </div>
+                </div>
+                
+                <div id="sample-tab" class="tab-content">
+                    <div class="form-section">
+                        <h2>Sample ADIME Note</h2>
+                        <p>Use this sample ADIME note to test the application:</p>
+                        <div class="sample-note">
+                            <strong>ASSESSMENT:</strong><br>
+                            Patient is a 45-year-old female with Type 2 Diabetes. Weight: 180 lbs (BMI 32.5). Lab results show HbA1c of 8.2% and LDL of 150 mg/dL. Patient reports consuming high-carbohydrate diet with minimal vegetables and protein. Currently drinks 3-4 sodas daily and eats fast food 4-5 times per week. Reports feeling tired most days and struggles with portion control. No regular exercise routine.
+                            <br><br>
+                            <strong>DIAGNOSIS:</strong><br>
+                            Excessive carbohydrate intake related to knowledge deficit about diabetic diet as evidenced by high HbA1c levels and reported dietary habits. Inadequate vegetable consumption related to food preferences as evidenced by patient's dietary recall. Excess calorie intake related to frequent consumption of calorie-dense foods as evidenced by elevated BMI.
+                            <br><br>
+                            <strong>INTERVENTION:</strong><br>
+                            1. Reduce soda consumption to maximum 1 per day, replacing with water or unsweetened tea.<br>
+                            2. Introduce plate method for portion control: 1/2 plate non-starchy vegetables, 1/4 plate lean protein, 1/4 plate complex carbohydrates.<br>
+                            3. Replace fast food meals with home-prepared meals at least 4 days per week.<br>
+                            4. Add 2 servings of leafy greens daily.<br>
+                            5. Begin 15-minute walks after lunch and dinner.<br>
+                            6. Provided education on carbohydrate counting and label reading.
+                            <br><br>
+                            <strong>MONITORING/EVALUATION:</strong><br>
+                            Follow-up in 3 weeks to assess compliance with dietary changes. Monitor weight, HbA1c, and energy levels. Track food diary for 1 week prior to next appointment. Assess for challenges in implementation and adjust recommendations as needed.
+                        </div>
+                        <button type="button" class="submit-btn" onclick="useSampleNote()">Use This Sample</button>
+                    </div>
+                </div>
+                
+                <button type="submit" class="submit-btn">Process ADIME Note</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // File upload functionality
+        const uploadBox = document.getElementById('upload-box');
+        const fileInput = document.getElementById('file-input');
+        
+        uploadBox.addEventListener('click', () => {
+            fileInput.click();
+        });
+        
+        uploadBox.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadBox.style.borderColor = '#3498db';
+            uploadBox.style.backgroundColor = 'rgba(52, 152, 219, 0.1)';
+        });
+        
+        uploadBox.addEventListener('dragleave', () => {
+            uploadBox.style.borderColor = '#ccc';
+            uploadBox.style.backgroundColor = 'transparent';
+        });
+        
+        uploadBox.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadBox.style.borderColor = '#ccc';
+            uploadBox.style.backgroundColor = 'transparent';
+            
+            if (e.dataTransfer.files.length) {
+                fileInput.files = e.dataTransfer.files;
+                const fileName = e.dataTransfer.files[0].name;
+                updateFileName(fileName);
+            }
+        });
+        
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length) {
+                const fileName = fileInput.files[0].name;
+                updateFileName(fileName);
+            }
+        });
+        
+        function updateFileName(name) {
+            const fileNameDisplay = document.createElement('p');
+            fileNameDisplay.textContent = `Selected file: ${name}`;
+            fileNameDisplay.style.fontWeight = 'bold';
+            fileNameDisplay.style.marginTop = '10px';
+            
+            // Remove any existing filename display
+            const existingDisplay = uploadBox.querySelector('p[style*="font-weight: bold"]');
+            if (existingDisplay) {
+                existingDisplay.remove();
+            }
+            
+            uploadBox.appendChild(fileNameDisplay);
+        }
+        
+        // Tab functionality
+        function openTab(evt, tabName) {
+            const tabContents = document.getElementsByClassName("tab-content");
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].style.display = "none";
+            }
+            
+            const tabButtons = document.getElementsByClassName("tab-button");
+            for (let i = 0; i < tabButtons.length; i++) {
+                tabButtons[i].className = tabButtons[i].className.replace(" active", "");
+            }
+            
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+        
+        // Sample note functionality
+        function useSampleNote() {
+            const sampleText = document.querySelector('.sample-note').innerText;
+            const textArea = document.querySelector('textarea[name="text_content"]');
+            textArea.value = sampleText;
+            
+            // Switch to paste tab
+            const tabEvent = { currentTarget: document.querySelector('button[onclick*="paste-tab"]') };
+            openTab(tabEvent, 'paste-tab');
+        }
+    </script>
+</body>
+</html> 
