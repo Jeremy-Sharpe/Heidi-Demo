@@ -164,6 +164,60 @@
             overflow-y: auto;
             max-height: 200px;
         }
+        
+        /* Progress bar styles */
+        .processing-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .processing-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            width: 80%;
+            max-width: 500px;
+            text-align: center;
+        }
+        
+        .processing-title {
+            color: var(--secondary-color);
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+        
+        .progress-container {
+            width: 100%;
+            background-color: #f1f1f1;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 20px;
+            background-color: var(--primary-color);
+            width: 5%;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+        
+        .progress-status {
+            margin-top: 15px;
+            color: #666;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -176,7 +230,7 @@
                 <button class="tab-button" onclick="openTab(event, 'sample-tab')">Sample Note</button>
             </div>
             
-            <form action="/upload-adime/" method="post" enctype="multipart/form-data">
+            <form id="adime-form" action="/upload-adime/" method="post" enctype="multipart/form-data">
                 <div id="upload-tab" class="tab-content" style="display: block;">
                     <div class="form-section">
                         <div class="upload-box" id="upload-box">
@@ -222,8 +276,19 @@
                     </div>
                 </div>
                 
-                <button type="submit" class="submit-btn">Process ADIME Note</button>
+                <button type="submit" id="process-btn" class="submit-btn">Process ADIME Note</button>
             </form>
+        </div>
+    </div>
+    
+    <!-- Processing overlay with progress bar -->
+    <div id="processing-overlay" class="processing-overlay">
+        <div class="processing-container">
+            <h2 class="processing-title">Processing Your Nutrition Note</h2>
+            <div class="progress-container">
+                <div id="progress-bar" class="progress-bar"></div>
+            </div>
+            <div id="progress-status" class="progress-status">Starting analysis...</div>
         </div>
     </div>
 
@@ -306,6 +371,60 @@
             // Switch to paste tab
             const tabEvent = { currentTarget: document.querySelector('button[onclick*="paste-tab"]') };
             openTab(tabEvent, 'paste-tab');
+        }
+        
+        // Progress bar functionality
+        const adimeForm = document.getElementById('adime-form');
+        const processBtn = document.getElementById('process-btn');
+        const processingOverlay = document.getElementById('processing-overlay');
+        const progressBar = document.getElementById('progress-bar');
+        const progressStatus = document.getElementById('progress-status');
+        
+        // Status messages to show during processing
+        const statusMessages = [
+            "Starting analysis...",
+            "Parsing ADIME note...",
+            "Identifying nutrition goals...",
+            "Analyzing nutrition data...",
+            "Generating personalized recommendations...",
+            "Creating visualizations...",
+            "Finalizing your personal nutrition plan..."
+        ];
+        
+        adimeForm.addEventListener('submit', (e) => {
+            // Show processing overlay
+            processingOverlay.style.display = 'flex';
+            
+            // Set initial progress
+            let currentProgress = 5;
+            let messageIndex = 0;
+            updateProgress(currentProgress + "%", statusMessages[0]);
+            
+            // Create a timer that increments progress by 3% every 0.25 seconds
+            const progressTimer = setInterval(() => {
+                // Increment progress
+                currentProgress += 1;
+                
+                // Cap at 95% to avoid showing completion before actual page load
+                if (currentProgress >= 95) {
+                    currentProgress = 95;
+                    clearInterval(progressTimer);
+                }
+                
+                // Update the progress bar
+                updateProgress(currentProgress + "%", statusMessages[messageIndex]);
+                
+                // Occasionally update the status message (every ~15% progress)
+                if (currentProgress % 15 === 0 && messageIndex < statusMessages.length - 1) {
+                    messageIndex++;
+                    updateProgress(currentProgress + "%", statusMessages[messageIndex]);
+                }
+            }, 250); // Update every 0.25 seconds
+        });
+        
+        function updateProgress(width, text) {
+            progressBar.style.width = width;
+            progressStatus.textContent = text;
         }
     </script>
 </body>

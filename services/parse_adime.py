@@ -91,8 +91,9 @@ async def parse_with_openai(content: str) -> Dict[str, Any]:
     # Prepare the prompt
     prompt = f"""
     Parse the following ADIME (Assessment, Diagnosis, Intervention, Monitoring/Evaluation) note into structured JSON.
-    Extract key information for each section, and especially identify clear action items from the Intervention section 
-    that we could visualize.
+    Extract key information for each section in a patient-friendly format using first-person language.
+    
+    IMPORTANT: Make recommendations highly specific, practical and contextually relevant to the patient's actual health issues identified in their assessment and diagnosis. Directly connect each recommendation to the specific health concerns in the notes.
     
     ADIME NOTE:
     {content}
@@ -100,29 +101,31 @@ async def parse_with_openai(content: str) -> Dict[str, Any]:
     Return ONLY a JSON object with the following structure:
     {{
         "assessment": {{
-            "summary": "Brief summary of patient assessment",
-            "weight": "patient weight if mentioned",
-            "labs": ["relevant lab results"],
-            "current_intake": "description of current diet/intake"
+            "summary": "Patient-friendly summary of why they came in and key findings, using clear language",
+            "weight": "Patient weight and BMI if mentioned, with appropriate descriptors",
+            "labs": ["List of lab results WITHOUT normal ranges"],
+            "current_intake": "Description of current diet/intake in simple terms"
         }},
         "diagnosis": {{
-            "problems": ["list of identified problems"],
-            "summary": "summary of diagnosis"
+            "problems": ["List of nutrition problems in plain language without medical jargon"],
+            "summary": "Plain-language explanation of nutrition issues and how they relate to health"
         }},
         "intervention": {{
-            "summary": "summary of intervention plan",
+            "summary": "Overall summary of recommended nutrition plan",
+            "short_term_goals": ["1-2 achievable goals for the next 1-2 weeks with specific actionable steps tailored to the patient's actual health issues"],
+            "long_term_goals": ["2-3 goals for the next 2-6 months directly addressing the identified health problems"],
             "action_items": [
                 {{ 
-                    "title": "clear action item title", 
-                    "description": "detailed explanation",
-                    "visualization_prompt": "detailed prompt to generate an image for this action item"
+                    "title": "Clear, actionable title relevant to a specific health issue", 
+                    "description": "Detailed explanation in first-person perspective with specific food examples and quantities based on the patient's actual health needs",
+                    "visualization_prompt": "Detailed prompt to generate an image for this personal nutrition goal"
                 }}
             ]
         }},
         "monitoring": {{
-            "follow_up": "follow up plan",
-            "metrics": ["metrics to monitor"],
-            "timeline": "timeline for monitoring"
+            "follow_up": "Next steps and follow-up plans in simple terms",
+            "metrics": ["How success will be measured in plain language"],
+            "timeline": "Timeline for monitoring in patient-friendly terms"
         }}
     }}
     """
@@ -131,7 +134,7 @@ async def parse_with_openai(content: str) -> Dict[str, Any]:
     data = {
         "model": "gpt-4o",
         "messages": [
-            {"role": "system", "content": "You are a dietitian's assistant that specializes in parsing ADIME notes into structured data."},
+            {"role": "system", "content": "You are a dietitian's assistant that specializes in parsing ADIME notes into patient-friendly structured data. Convert all medical terminology into simple language. Use first-person perspective for all recommendations and goals. Do NOT include normal ranges with individual lab values. Make all recommendations contextually specific and practical based on the patient's actual health data, without using generic advice. Each recommendation must directly address the specific health issues identified in the assessment and diagnosis."},
             {"role": "user", "content": prompt}
         ],
         "temperature": 0.2
@@ -188,7 +191,7 @@ def extract_action_items(intervention_text: str) -> List[Dict[str, str]]:
             action_items.append({
                 "title": title,
                 "description": point,
-                "visualization_prompt": f"Create a simple, clear infographic for a nutritional recommendation: {point}"
+                "visualization_prompt": f"Create a simple, clear infographic for a personal nutritional goal with first-person perspective (I should, I will): {point}"
             })
     
     # If no bullet points were found, try to create action items from paragraphs
@@ -203,7 +206,7 @@ def extract_action_items(intervention_text: str) -> List[Dict[str, str]]:
                 action_items.append({
                     "title": title,
                     "description": para,
-                    "visualization_prompt": f"Create a simple, clear infographic for a nutritional recommendation: {para[:100]}"
+                    "visualization_prompt": f"Create a simple, clear infographic for a personal nutritional goal with first-person perspective (I should, I will): {para[:100]}"
                 })
     
     return action_items 
