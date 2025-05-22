@@ -3,21 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Nutrition Plan</title>
+    <title>ADIME Report</title>
     <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #3498db;
-            --secondary-color: #2c3e50;
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
             --light-gray: #f5f7f9;
-            --border-radius: 6px;
-            --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --border-radius: 4px;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
         
         body {
             font-family: Arial, sans-serif;
-            line-height: 1.4;
+            line-height: 1.5;
             color: #333;
             background-color: var(--light-gray);
             margin: 0;
@@ -37,21 +37,31 @@
         .header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
             margin-bottom: 20px;
             padding-bottom: 10px;
             border-bottom: 1px solid #eee;
         }
         
-        .header h1 {
-            color: var(--secondary-color);
-            margin: 0;
-            font-size: 18pt;
+        .header-content {
+            flex: 1;
+        }
+        
+        .patient-info {
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        
+        .patient-info p {
+            margin: 5px 0;
         }
         
         .actions {
             display: flex;
             gap: 10px;
+            flex-wrap: wrap;
         }
         
         .btn {
@@ -66,7 +76,7 @@
         }
         
         .btn:hover {
-            background-color: #2980b9;
+            background-color: var(--secondary-color);
         }
         
         .btn-secondary {
@@ -78,194 +88,122 @@
         }
         
         .section {
-            margin-bottom: 20px;
+            margin-bottom: 30px;
             clear: both;
+            position: relative;
         }
         
         .section-title {
             color: var(--primary-color);
-            border-bottom: 1px solid var(--primary-color);
-            padding-bottom: 3px;
-            margin-bottom: 10px;
             font-size: 16pt;
-        }
-        
-        /* Style for the section guidance text */
-        .section-guidance {
-            color: #666;
-            font-style: italic;
-            margin-top: 5px;
-            margin-bottom: 20px;
-        }
-        
-        /* Style for normal ranges information */
-        .range-info {
-            background-color: #f0f7ff;
-            border-left: 3px solid var(--primary-color);
-            padding: 6px 10px;
-            font-size: 0.9em;
-            color: #555;
-            margin-top: 8px;
-            border-radius: 3px;
+            font-weight: bold;
+            margin-bottom: 10px;
         }
         
         .editor {
             border: none;
             padding: 0;
             min-height: 0;
-            margin-bottom: 8px;
-        }
-        
-        .assessment-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 15px;
-            margin-top: 10px;
-        }
-        
-        .assessment-card {
-            background-color: white;
-            border-radius: var(--border-radius);
-            padding: 10px;
-            box-shadow: var(--shadow);
-        }
-        
-        .assessment-card h3 {
-            color: var(--secondary-color);
-            margin-top: 0;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 5px;
-            font-size: 13pt;
-            margin-bottom: 8px;
-        }
-        
-        .assessment-card .editor {
-            max-height: 120px;
-            margin-bottom: 0;
-            min-height: 50px;
-            padding: 8px;
-        }
-        
-        .assessment-card .ql-container {
-            max-height: 80px;
-        }
-        
-        /* Style for goals section */
-        .goals-section {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
-            gap: 15px;
-            margin: 10px 0;
-        }
-        
-        .goal-card {
-            background-color: white;
-            border-radius: var(--border-radius);
-            padding: 10px;
-            box-shadow: var(--shadow);
-        }
-        
-        .goal-card h3 {
-            color: var(--secondary-color);
-            margin-top: 0;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 5px;
-            font-size: 13pt;
-        }
-        
-        .goal-card .editor {
-            max-height: 150px;
-            margin-bottom: 0;
-            min-height: 50px;
-        }
-
-        .action-items {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
-            gap: 15px;
-            margin-top: 10px;
-        }
-        
-        .action-item {
-            background-color: white;
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            box-shadow: var(--shadow);
             margin-bottom: 15px;
         }
         
-        .action-header {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 8px 12px;
+        .data-row {
+            margin-bottom: 5px;
+            position: relative;
         }
         
-        .action-header h3 {
-            margin: 0;
-            font-size: 13pt;
+        .data-label {
+            font-weight: bold;
+            display: inline-block;
+            min-width: 200px;
         }
         
-        .action-content {
-            padding: 12px;
-            display: flex;
-            flex-direction: row;
-            align-items: flex-start;
-            gap: 15px;
+        .subsection {
+            margin-top: 15px;
+            margin-bottom: 15px;
+            position: relative;
         }
         
-        .action-text {
-            flex: 1;
-            min-width: 0;
-            width: 50%;
-        }
-        
-        .action-image {
-            margin-top: 0;
-            text-align: center;
-            flex: 1;
-            min-width: 0;
-            max-width: 45%;
-        }
-        
-        .action-image img {
-            max-width: 100%;
-            max-height: 150px;
-            border-radius: 6px;
-            object-fit: contain;
-        }
-        
-        .action-content .editor {
-            max-height: 150px;
-            margin-bottom: 10px;
-        }
-        
-        .ql-editor {
-            min-height: 60px;
-            max-height: 150px;
-            overflow-y: auto;
-        }
-        
-        .ql-toolbar.ql-snow {
-            border-bottom: 1px solid #ddd;
-            position: sticky;
-            top: 0;
-            background: white;
-            z-index: 10;
-        }
-        
-        .ql-container.ql-snow {
-            border: none;
+        .subsection-title {
+            font-weight: bold;
+            margin-bottom: 8px;
         }
         
         .hidden {
             display: none;
         }
         
-        /* Class to hide elements when printing */
-        .print-hide {
-            display: none !important;
+        .add-field-btn {
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 16px;
+            line-height: 24px;
+            text-align: center;
+            cursor: pointer;
+            margin-left: 10px;
+            display: inline-block;
         }
         
+        .remove-field-btn {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            line-height: 20px;
+            text-align: center;
+            cursor: pointer;
+            position: absolute;
+            right: 0;
+            top: 5px;
+            display: none;
+        }
+        
+        .data-row:hover .remove-field-btn {
+            display: block;
+        }
+        
+        .add-subsection-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 5px 10px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 10px;
+            display: inline-block;
+        }
+        
+        .add-section-btn {
+            background-color: #9b59b6;
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 8px 15px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 20px;
+            display: inline-block;
+        }
+        
+        .section-actions {
+            margin-bottom: 15px;
+        }
+        
+        .custom-field-input {
+            width: 180px;
+            padding: 5px;
+            margin-right: 10px;
+        }
+        
+        /* Handle in print view */
         @media print {
             body {
                 background-color: white;
@@ -275,32 +213,22 @@
             .container {
                 box-shadow: none;
                 max-width: 100%;
-                padding: 0;
+                padding: 15px;
             }
             
-            .actions, .ql-toolbar {
+            .actions, .ql-toolbar, .add-field-btn, .remove-field-btn, .add-subsection-btn, .add-section-btn, .section-actions {
                 display: none !important;
             }
             
-            .section, .action-item {
+            .section {
                 break-inside: avoid;
+                page-break-inside: avoid;
             }
             
             .editor, .ql-editor {
                 max-height: none;
                 overflow: visible;
             }
-            
-            /* Hide guidance text in print view */
-            .section-guidance, .print-hide {
-                display: none !important;
-            }
-        }
-        
-        h3 {
-            font-size: 13pt;
-            margin-top: 12px;
-            margin-bottom: 8px;
         }
         
         ul, ol {
@@ -318,7 +246,53 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>My Personal Nutrition Plan</h1>
+            <div class="header-content">
+                <h1 style="margin-top: 0; margin-bottom: 15px;">ADIME Report</h1>
+                
+                <div class="patient-info">
+                    <p><span class="data-label">Resident Name:</span> 
+                        <span id="resident-name" class="editor">
+                            {% if adime_data.patient_info and adime_data.patient_info.name %}
+                            {{ adime_data.patient_info.name }}
+                            {% else %}
+                            Unknown
+                            {% endif %}
+                        </span>
+                    </p>
+                    <p><span class="data-label">Date:</span> 
+                        <span id="report-date" class="editor">
+                            {% if adime_data.patient_info and adime_data.patient_info.date %}
+                            {{ adime_data.patient_info.date }}
+                            {% else %}
+                            {{ now.strftime('%d %B %Y') }}
+                            {% endif %}
+                        </span>
+                    </p>
+                    <p><span class="data-label">Time:</span> 
+                        <span id="report-time" class="editor">
+                            {% if adime_data.patient_info and adime_data.patient_info.time %}
+                            {{ adime_data.patient_info.time }}
+                            {% else %}
+                            {{ now.strftime('%H:%M %p') }}
+                            {% endif %}
+                        </span>
+                    </p>
+                    <p><span class="data-label">RD Name:</span> 
+                        <span id="rd-name" class="editor">
+                            {% if adime_data.patient_info and adime_data.patient_info.rd_name %}
+                            {{ adime_data.patient_info.rd_name }}
+                            {% else %}
+                            
+                            {% endif %}
+                        </span>
+                    </p>
+                    <div class="custom-fields-patient"></div>
+                    <div class="add-field-container">
+                        <button class="add-field-btn" title="Add new field" onclick="addCustomField('patient-info', '.custom-fields-patient')">+</button>
+                    </div>
+                </div>
+            </div>
+            
             <div class="actions">
                 <button id="edit-toggle-btn" class="btn btn-secondary">Exit Edit Mode</button>
                 <button id="generate-pdf-btn" class="btn">Download PDF</button>
@@ -327,154 +301,391 @@
         
         <div id="editor-container">
             <!-- Assessment Section -->
-            <div class="section">
-                <h2 class="section-title">✅ Summary of Health Status</h2>
-                <p class="section-guidance print-hide">A brief overview of your health status and why you came in for nutritional guidance.</p>
+            <div id="assessment-section" class="section">
+                <h2 class="section-title">(A) Assessment:</h2>
                 
-                {% if adime_data.assessment.summary is defined %}
-                <div id="assessment-summary" class="editor">{{ adime_data.assessment.summary }}</div>
-                {% elif adime_data.assessment is string %}
-                <div id="assessment-summary" class="editor">{{ adime_data.assessment }}</div>
-                {% else %}
-                <div id="assessment-summary" class="editor">No assessment data available.</div>
-                {% endif %}
+                <!-- Patient Demographics -->
+                <div class="subsection">
+                    <p class="data-row"><span class="data-label">Age:</span> 
+                        <span id="patient-age" class="editor">
+                            {% if adime_data.assessment.age %}{{ adime_data.assessment.age }}{% endif %}
+                        </span>
+                        <button class="remove-field-btn" title="Remove field" onclick="removeField(this.parentElement)">×</button>
+                    </p>
+                    <p class="data-row"><span class="data-label">Gender:</span> 
+                        <span id="patient-gender" class="editor">
+                            {% if adime_data.assessment.gender %}{{ adime_data.assessment.gender }}{% endif %}
+                        </span>
+                        <button class="remove-field-btn" title="Remove field" onclick="removeField(this.parentElement)">×</button>
+                    </p>
+                    <p class="data-row"><span class="data-label">Weight:</span> 
+                        <span id="patient-weight" class="editor">
+                            {% if adime_data.assessment.weight %}{{ adime_data.assessment.weight }}{% endif %}
+                        </span>
+                        <button class="remove-field-btn" title="Remove field" onclick="removeField(this.parentElement)">×</button>
+                    </p>
+                    <p class="data-row"><span class="data-label">Height:</span> 
+                        <span id="patient-height" class="editor">
+                            {% if adime_data.assessment.height %}{{ adime_data.assessment.height }}{% endif %}
+                        </span>
+                        <button class="remove-field-btn" title="Remove field" onclick="removeField(this.parentElement)">×</button>
+                    </p>
+                    <p class="data-row"><span class="data-label">Body Mass Index (BMI):</span> 
+                        <span id="patient-bmi" class="editor">
+                            {% if adime_data.assessment.bmi %}{{ adime_data.assessment.bmi }}{% endif %}
+                        </span>
+                        <button class="remove-field-btn" title="Remove field" onclick="removeField(this.parentElement)">×</button>
+                    </p>
+                    <p class="data-row"><span class="data-label">Usual Body Weight (UBW):</span> 
+                        <span id="patient-ubw" class="editor">
+                            {% if adime_data.assessment.ubw %}{{ adime_data.assessment.ubw }}{% endif %}
+                        </span>
+                        <button class="remove-field-btn" title="Remove field" onclick="removeField(this.parentElement)">×</button>
+                    </p>
+                    <p class="data-row"><span class="data-label">Weight History:</span> 
+                        <span id="weight-history" class="editor">
+                            {% if adime_data.assessment.weight_history %}{{ adime_data.assessment.weight_history }}{% endif %}
+                        </span>
+                        <button class="remove-field-btn" title="Remove field" onclick="removeField(this.parentElement)">×</button>
+                    </p>
+                    <p class="data-row"><span class="data-label">IBW/%IBW:</span> 
+                        <span id="patient-ibw" class="editor">
+                            {% if adime_data.assessment.ibw %}{{ adime_data.assessment.ibw }}{% endif %}
+                        </span>
+                        <button class="remove-field-btn" title="Remove field" onclick="removeField(this.parentElement)">×</button>
+                    </p>
+                    
+                    <div class="custom-fields-demographics"></div>
+                    <div class="add-field-container">
+                        <button class="add-field-btn" title="Add new field" onclick="addCustomField('demographics', '.custom-fields-demographics')">+</button>
+                    </div>
+                </div>
                 
-                <div class="assessment-grid">
-                    <!-- Weight -->
-                    <div class="assessment-card">
-                        <h3>Weight & Measurements</h3>
-                        <div id="assessment-weight" class="editor">
-                            {% if adime_data.assessment.weight is defined %}
-                            {{ adime_data.assessment.weight }}
-                            <p class="range-info print-hide">Healthy BMI range is 18.5-24.9. BMI outside this range may indicate underweight, overweight, or obesity.</p>
-                            {% else %}
-                            No weight data available.
-                            {% endif %}
-                        </div>
-                    </div>
+                <!-- Dietary Information -->
+                <div class="subsection">
+                    <div class="subsection-title">Dietary Information</div>
+                    <p class="data-row"><span class="data-label">Appetite:</span> 
+                        <span id="patient-appetite" class="editor">
+                            {% if adime_data.assessment.appetite %}{{ adime_data.assessment.appetite }}{% endif %}
+                        </span>
+                        <button class="remove-field-btn" title="Remove field" onclick="removeField(this.parentElement)">×</button>
+                    </p>
+                    <p class="data-row"><span class="data-label">Food Allergies/Intolerance:</span> 
+                        <span id="food-allergies" class="editor">
+                            {% if adime_data.assessment.food_allergies %}{{ adime_data.assessment.food_allergies }}{% endif %}
+                        </span>
+                        <button class="remove-field-btn" title="Remove field" onclick="removeField(this.parentElement)">×</button>
+                    </p>
+                    <p class="data-row"><span class="data-label">Food Preferences:</span> 
+                        <span id="food-preferences" class="editor">
+                            {% if adime_data.assessment.food_preferences %}{{ adime_data.assessment.food_preferences }}{% endif %}
+                        </span>
+                        <button class="remove-field-btn" title="Remove field" onclick="removeField(this.parentElement)">×</button>
+                    </p>
+                    <p class="data-row"><span class="data-label">Adaptive Devices:</span> 
+                        <span id="adaptive-devices" class="editor">
+                            {% if adime_data.assessment.adaptive_devices %}{{ adime_data.assessment.adaptive_devices }}{% endif %}
+                        </span>
+                        <button class="remove-field-btn" title="Remove field" onclick="removeField(this.parentElement)">×</button>
+                    </p>
                     
-                    <!-- Labs -->
-                    <div class="assessment-card">
-                        <h3>Lab Results</h3>
-                        <div id="assessment-labs" class="editor">
-                            {% if adime_data.assessment.labs is defined %}
-                            {% if adime_data.assessment.labs is string %}
-                            {{ adime_data.assessment.labs }}
-                            {% else %}
-                            <ul>
-                                {% for lab in adime_data.assessment.labs %}
-                                <li>{{ lab }}</li>
-                                {% endfor %}
-                            </ul>
-                            {% endif %}
-                            <p class="range-info print-hide">Normal ranges: Blood glucose (fasting): 70-99 mg/dL; HbA1c: below 5.7%; Blood pressure: below 120/80 mmHg</p>
-                            {% else %}
-                            No lab data available.
-                            {% endif %}
-                        </div>
+                    <div class="custom-fields-dietary"></div>
+                    <div class="add-field-container">
+                        <button class="add-field-btn" title="Add new field" onclick="addCustomField('dietary', '.custom-fields-dietary')">+</button>
                     </div>
+                </div>
+                
+                <!-- Diet Information -->
+                <div class="subsection">
+                    <p class="data-row"><span class="data-label">Current diet order:</span> 
+                        <span id="diet-order" class="editor">
+                            {% if adime_data.assessment.diet_order %}{{ adime_data.assessment.diet_order }}{% endif %}
+                        </span>
+                        <button class="remove-field-btn" title="Remove field" onclick="removeField(this.parentElement)">×</button>
+                    </p>
+                    <p class="data-row"><span class="data-label">% intake of meals:</span> 
+                        <span id="meal-intake" class="editor">
+                            {% if adime_data.assessment.meal_intake_percent %}{{ adime_data.assessment.meal_intake_percent }}{% endif %}
+                        </span>
+                        <button class="remove-field-btn" title="Remove field" onclick="removeField(this.parentElement)">×</button>
+                    </p>
+                    <p class="data-row"><span class="data-label">Supplement order:</span> 
+                        <span id="supplement-order" class="editor">
+                            {% if adime_data.assessment.supplement_order %}{{ adime_data.assessment.supplement_order }}{% endif %}
+                        </span>
+                        <button class="remove-field-btn" title="Remove field" onclick="removeField(this.parentElement)">×</button>
+                    </p>
+                    <p class="data-row"><span class="data-label">% intake of supplement:</span> 
+                        <span id="supplement-intake" class="editor">
+                            {% if adime_data.assessment.supplement_intake_percent %}{{ adime_data.assessment.supplement_intake_percent }}{% endif %}
+                        </span>
+                        <button class="remove-field-btn" title="Remove field" onclick="removeField(this.parentElement)">×</button>
+                    </p>
+                    <p class="data-row"><span class="data-label">Chewing or swallowing difficulty:</span> 
+                        <span id="chewing-swallowing" class="editor">
+                            {% if adime_data.assessment.chewing_swallowing %}{{ adime_data.assessment.chewing_swallowing }}{% endif %}
+                        </span>
+                        <button class="remove-field-btn" title="Remove field" onclick="removeField(this.parentElement)">×</button>
+                    </p>
                     
-                    <!-- Current Intake -->
-                    <div class="assessment-card">
-                        <h3>Current Eating Patterns</h3>
-                        <div id="assessment-intake" class="editor">
-                            {% if adime_data.assessment.current_intake is defined %}
-                            {{ adime_data.assessment.current_intake }}
-                            {% else %}
-                            No intake data available.
-                            {% endif %}
-                        </div>
+                    <div class="custom-fields-diet"></div>
+                    <div class="add-field-container">
+                        <button class="add-field-btn" title="Add new field" onclick="addCustomField('diet', '.custom-fields-diet')">+</button>
                     </div>
+                </div>
+                
+                <!-- Medical Information -->
+                <div class="subsection">
+                    <p class="data-row"><span class="data-label">Feeding Assistance:</span> 
+                        <span id="feeding-assistance" class="editor">
+                            {% if adime_data.assessment.feeding_assistance %}{{ adime_data.assessment.feeding_assistance }}{% endif %}
+                        </span>
+                        <button class="remove-field-btn" title="Remove field" onclick="removeField(this.parentElement)">×</button>
+                    </p>
+                    <p class="data-row"><span class="data-label">Skin condition:</span> 
+                        <span id="skin-condition" class="editor">
+                            {% if adime_data.assessment.skin_condition %}{{ adime_data.assessment.skin_condition }}{% endif %}
+                        </span>
+                        <button class="remove-field-btn" title="Remove field" onclick="removeField(this.parentElement)">×</button>
+                    </p>
+                    <p class="data-row"><span class="data-label">Medical diagnosis:</span> 
+                        <span id="medical-diagnosis" class="editor">
+                            {% if adime_data.assessment.medical_diagnosis %}{{ adime_data.assessment.medical_diagnosis }}{% endif %}
+                        </span>
+                        <button class="remove-field-btn" title="Remove field" onclick="removeField(this.parentElement)">×</button>
+                    </p>
+                    <p class="data-row"><span class="data-label">Pertinent labs:</span> 
+                        <span id="pertinent-labs" class="editor">
+                            {% if adime_data.assessment.labs %}
+                                {% if adime_data.assessment.labs is string %}
+                                    {{ adime_data.assessment.labs }}
+                                {% else %}
+                                    {% for lab in adime_data.assessment.labs %}
+                                        {{ lab }}{% if not loop.last %}, {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                            {% endif %}
+                        </span>
+                        <button class="remove-field-btn" title="Remove field" onclick="removeField(this.parentElement)">×</button>
+                    </p>
+                    <p class="data-row"><span class="data-label">Pertinent medications:</span> 
+                        <span id="pertinent-medications" class="editor">
+                            {% if adime_data.assessment.medications %}{{ adime_data.assessment.medications }}{% endif %}
+                        </span>
+                        <button class="remove-field-btn" title="Remove field" onclick="removeField(this.parentElement)">×</button>
+                    </p>
+                    
+                    <div class="custom-fields-medical"></div>
+                    <div class="add-field-container">
+                        <button class="add-field-btn" title="Add new field" onclick="addCustomField('medical', '.custom-fields-medical')">+</button>
+                    </div>
+                </div>
+                
+                <!-- NFPE Section -->
+                <div class="subsection">
+                    <div class="subsection-title">Nutritional Focused Physical Exam (NFPE):</div>
+                    <p class="data-row"><span class="data-label">Appearance:</span> 
+                        <span id="nfpe-appearance" class="editor">
+                            {% if adime_data.assessment.nfpe_appearance %}{{ adime_data.assessment.nfpe_appearance }}{% endif %}
+                        </span>
+                        <button class="remove-field-btn" title="Remove field" onclick="removeField(this.parentElement)">×</button>
+                    </p>
+                    <p class="data-row"><span class="data-label">Body Fat:</span> 
+                        <span id="nfpe-body-fat" class="editor">
+                            {% if adime_data.assessment.nfpe_body_fat %}{{ adime_data.assessment.nfpe_body_fat }}{% endif %}
+                        </span>
+                        <button class="remove-field-btn" title="Remove field" onclick="removeField(this.parentElement)">×</button>
+                    </p>
+                    <p class="data-row"><span class="data-label">Orbital:</span> 
+                        <span id="nfpe-orbital" class="editor">
+                            {% if adime_data.assessment.nfpe_orbital %}{{ adime_data.assessment.nfpe_orbital }}{% endif %}
+                        </span>
+                        <button class="remove-field-btn" title="Remove field" onclick="removeField(this.parentElement)">×</button>
+                    </p>
+                    <p class="data-row"><span class="data-label">Triceps:</span> 
+                        <span id="nfpe-triceps" class="editor">
+                            {% if adime_data.assessment.nfpe_triceps %}{{ adime_data.assessment.nfpe_triceps }}{% endif %}
+                        </span>
+                        <button class="remove-field-btn" title="Remove field" onclick="removeField(this.parentElement)">×</button>
+                    </p>
+                    <p class="data-row"><span class="data-label">Fat overlying ribs:</span> 
+                        <span id="nfpe-ribs-fat" class="editor">
+                            {% if adime_data.assessment.nfpe_ribs_fat %}{{ adime_data.assessment.nfpe_ribs_fat }}{% endif %}
+                        </span>
+                        <button class="remove-field-btn" title="Remove field" onclick="removeField(this.parentElement)">×</button>
+                    </p>
+                    
+                    <div class="custom-fields-nfpe"></div>
+                    <div class="add-field-container">
+                        <button class="add-field-btn" title="Add new field" onclick="addCustomField('nfpe', '.custom-fields-nfpe')">+</button>
+                    </div>
+                </div>
+                
+                <!-- Muscle Mass -->
+                <div class="subsection">
+                    <div class="subsection-title">Muscle Mass:</div>
+                    <p class="data-row"><span class="data-label">Temple:</span> 
+                        <span id="muscle-temple" class="editor">
+                            {% if adime_data.assessment.muscle_temple %}{{ adime_data.assessment.muscle_temple }}{% endif %}
+                        </span>
+                        <button class="remove-field-btn" title="Remove field" onclick="removeField(this.parentElement)">×</button>
+                    </p>
+                    <p class="data-row"><span class="data-label">Pectoralis:</span> 
+                        <span id="muscle-pectoralis" class="editor">
+                            {% if adime_data.assessment.muscle_pectoralis %}{{ adime_data.assessment.muscle_pectoralis }}{% endif %}
+                        </span>
+                        <button class="remove-field-btn" title="Remove field" onclick="removeField(this.parentElement)">×</button>
+                    </p>
+                    <p class="data-row"><span class="data-label">Delt:</span> 
+                        <span id="muscle-delt" class="editor">
+                            {% if adime_data.assessment.muscle_delt %}{{ adime_data.assessment.muscle_delt }}{% endif %}
+                        </span>
+                        <button class="remove-field-btn" title="Remove field" onclick="removeField(this.parentElement)">×</button>
+                    </p>
+                    <p class="data-row"><span class="data-label">Hand:</span> 
+                        <span id="muscle-hand" class="editor">
+                            {% if adime_data.assessment.muscle_hand %}{{ adime_data.assessment.muscle_hand }}{% endif %}
+                        </span>
+                        <button class="remove-field-btn" title="Remove field" onclick="removeField(this.parentElement)">×</button>
+                    </p>
+                    <p class="data-row"><span class="data-label">Back:</span> 
+                        <span id="muscle-back" class="editor">
+                            {% if adime_data.assessment.muscle_back %}{{ adime_data.assessment.muscle_back }}{% endif %}
+                        </span>
+                        <button class="remove-field-btn" title="Remove field" onclick="removeField(this.parentElement)">×</button>
+                    </p>
+                    <p class="data-row"><span class="data-label">Thigh:</span> 
+                        <span id="muscle-thigh" class="editor">
+                            {% if adime_data.assessment.muscle_thigh %}{{ adime_data.assessment.muscle_thigh }}{% endif %}
+                        </span>
+                        <button class="remove-field-btn" title="Remove field" onclick="removeField(this.parentElement)">×</button>
+                    </p>
+                    
+                    <div class="custom-fields-muscle"></div>
+                    <div class="add-field-container">
+                        <button class="add-field-btn" title="Add new field" onclick="addCustomField('muscle', '.custom-fields-muscle')">+</button>
+                    </div>
+                </div>
+                
+                <!-- Hydration and Malnutrition -->
+                <div class="subsection">
+                    <p class="data-row"><span class="data-label">Hydration Status:</span> 
+                        <span id="hydration-status" class="editor">
+                            {% if adime_data.assessment.hydration_status %}{{ adime_data.assessment.hydration_status }}{% endif %}
+                        </span>
+                        <button class="remove-field-btn" title="Remove field" onclick="removeField(this.parentElement)">×</button>
+                    </p>
+                    <p class="data-row"><span class="data-label">Malnutrition Status:</span> 
+                        <span id="malnutrition-status" class="editor">
+                            {% if adime_data.assessment.malnutrition_status %}{{ adime_data.assessment.malnutrition_status }}{% endif %}
+                        </span>
+                        <button class="remove-field-btn" title="Remove field" onclick="removeField(this.parentElement)">×</button>
+                    </p>
+                    
+                    <div class="custom-fields-hydration"></div>
+                    <div class="add-field-container">
+                        <button class="add-field-btn" title="Add new field" onclick="addCustomField('hydration', '.custom-fields-hydration')">+</button>
+                    </div>
+                </div>
+                
+                <!-- Nutrition Needs -->
+                <div class="subsection">
+                    <div class="subsection-title">Daily Estimated Nutrition Needs:</div>
+                    <p class="data-row"><span class="data-label">Total calories (kcal):</span> 
+                        <span id="calories-needs" class="editor">
+                            {% if adime_data.assessment.calories_needs %}{{ adime_data.assessment.calories_needs }}{% endif %}
+                        </span>
+                        <button class="remove-field-btn" title="Remove field" onclick="removeField(this.parentElement)">×</button>
+                    </p>
+                    <p class="data-row"><span class="data-label">Total protein (g/kg):</span> 
+                        <span id="protein-needs" class="editor">
+                            {% if adime_data.assessment.protein_needs %}{{ adime_data.assessment.protein_needs }}{% endif %}
+                        </span>
+                        <button class="remove-field-btn" title="Remove field" onclick="removeField(this.parentElement)">×</button>
+                    </p>
+                    <p class="data-row"><span class="data-label">Total fluids (ml):</span> 
+                        <span id="fluid-needs" class="editor">
+                            {% if adime_data.assessment.fluid_needs %}{{ adime_data.assessment.fluid_needs }}{% endif %}
+                        </span>
+                        <button class="remove-field-btn" title="Remove field" onclick="removeField(this.parentElement)">×</button>
+                    </p>
+                    <p class="data-row"><span class="data-label">Does current meal and supplement intake meet estimated needs?</span> 
+                        <span id="needs-met" class="editor">
+                            {% if adime_data.assessment.needs_met %}{{ adime_data.assessment.needs_met }}{% endif %}
+                        </span>
+                        <button class="remove-field-btn" title="Remove field" onclick="removeField(this.parentElement)">×</button>
+                    </p>
+                    
+                    <div class="custom-fields-nutrition"></div>
+                    <div class="add-field-container">
+                        <button class="add-field-btn" title="Add new field" onclick="addCustomField('nutrition', '.custom-fields-nutrition')">+</button>
+                    </div>
+                </div>
+                
+                <!-- Custom subsections for Assessment -->
+                <div id="custom-subsections-assessment"></div>
+                <div class="section-actions">
+                    <button class="add-subsection-btn" onclick="addCustomSubsection('assessment')">Add Subsection</button>
                 </div>
             </div>
             
             <!-- Diagnosis Section -->
-            <div class="section">
-                <h2 class="section-title">✅ Nutrition Problem</h2>
-                <p class="section-guidance print-hide">A clear explanation of the nutrition issues identified and how they relate to your health goals.</p>
-                
-                {% if adime_data.diagnosis.summary is defined %}
-                <div id="diagnosis-summary" class="editor">{{ adime_data.diagnosis.summary }}</div>
-                {% elif adime_data.diagnosis is string %}
-                <div id="diagnosis-summary" class="editor">{{ adime_data.diagnosis }}</div>
-                {% else %}
-                <div id="diagnosis-summary" class="editor">No diagnosis data available.</div>
-                {% endif %}
-                
-                <h3>Key Areas to Address</h3>
-                <div id="diagnosis-problems" class="editor">
-                    {% if adime_data.diagnosis.problems is defined %}
-                    {% if adime_data.diagnosis.problems is string %}
-                    {{ adime_data.diagnosis.problems }}
-                    {% else %}
-                    <ul>
-                        {% for problem in adime_data.diagnosis.problems %}
-                        <li>{{ problem }}</li>
-                        {% endfor %}
-                    </ul>
-                    {% endif %}
-                    {% else %}
-                    No problem list available.
+            <div id="diagnosis-section" class="section">
+                <h2 class="section-title">(D) Nutrition Diagnosis:</h2>
+                <div id="diagnosis-content" class="editor">
+                    {% if adime_data.diagnosis.content %}
+                    {{ adime_data.diagnosis.content }}
+                    {% elif adime_data.diagnosis.summary %}
+                    {{ adime_data.diagnosis.summary }}
+                    {% elif adime_data.diagnosis is string %}
+                    {{ adime_data.diagnosis }}
                     {% endif %}
                 </div>
-            </div>
-            
-            <!-- Intervention Section -->
-            <div class="section">
-                <h2 class="section-title">✅ Goals & Action Plan</h2>
-                <p class="section-guidance print-hide">Your personalized goals and specific actions to improve your nutrition and health.</p>
                 
-                <h3>Overall Plan</h3>
-                {% if adime_data.intervention.summary is defined %}
-                <div id="intervention-summary" class="editor">{{ adime_data.intervention.summary }}</div>
-                {% elif adime_data.intervention is string %}
-                <div id="intervention-summary" class="editor">{{ adime_data.intervention }}</div>
-                {% else %}
-                <div id="intervention-summary" class="editor">No intervention data available.</div>
-                {% endif %}
-                
-                <div class="goals-section">
-                    <div class="goal-card">
-                        <h3>Short-term Goals (1-2 weeks)</h3>
-                        <div id="short-term-goals" class="editor">
-                            {% if adime_data.intervention.short_term_goals is defined %}
-                            {% if adime_data.intervention.short_term_goals is string %}
-                            {{ adime_data.intervention.short_term_goals }}
+                <div class="subsection">
+                    <div class="subsection-title">Nutrition goals (SMART):</div>
+                    <div id="nutrition-goals" class="editor">
+                        {% if adime_data.diagnosis.goals %}
+                            {% if adime_data.diagnosis.goals is string %}
+                                {{ adime_data.diagnosis.goals }}
                             {% else %}
+                                <ul>
+                                    {% for goal in adime_data.diagnosis.goals %}
+                                    <li>{{ goal }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        {% elif adime_data.intervention.short_term_goals or adime_data.intervention.long_term_goals %}
                             <ul>
                                 {% for goal in adime_data.intervention.short_term_goals %}
                                 <li>{{ goal }}</li>
                                 {% endfor %}
-                            </ul>
-                            {% endif %}
-                            {% else %}
-                            Add 1-2 achievable goals you can complete in the next 1-2 weeks.
-                            {% endif %}
-                        </div>
-                    </div>
-                    
-                    <div class="goal-card">
-                        <h3>Long-term Goals (2-6 months)</h3>
-                        <div id="long-term-goals" class="editor">
-                            {% if adime_data.intervention.long_term_goals is defined %}
-                            {% if adime_data.intervention.long_term_goals is string %}
-                            {{ adime_data.intervention.long_term_goals }}
-                            {% else %}
-                            <ul>
                                 {% for goal in adime_data.intervention.long_term_goals %}
                                 <li>{{ goal }}</li>
                                 {% endfor %}
                             </ul>
-                            {% endif %}
-                            {% else %}
-                            Add your longer-term health and nutrition goals for the next 2-6 months.
-                            {% endif %}
-                        </div>
+                        {% endif %}
                     </div>
                 </div>
                 
-                <h3>Recommended Actions</h3>
-                <div class="action-items">
+                <!-- Custom subsections for Diagnosis -->
+                <div id="custom-subsections-diagnosis"></div>
+                <div class="section-actions">
+                    <button class="add-subsection-btn" onclick="addCustomSubsection('diagnosis')">Add Subsection</button>
+                </div>
+            </div>
+                
+            <!-- Intervention Section -->
+            <div id="intervention-section" class="section">
+                <h2 class="section-title">(I) Nutrition Interventions/Recommendations:</h2>
+                <div id="intervention-content" class="editor">
+                    {% if adime_data.intervention.content %}
+                    {{ adime_data.intervention.content }}
+                    {% elif adime_data.intervention.summary %}
+                    {{ adime_data.intervention.summary }}
+                    {% elif adime_data.intervention is string %}
+                    {{ adime_data.intervention }}
+                    {% else %}
                     {% set action_items = [] %}
                     {% if adime_data.intervention.action_items is defined %}
                     {% set action_items = adime_data.intervention.action_items %}
@@ -482,82 +693,68 @@
                     {% set action_items = adime_data.action_items %}
                     {% endif %}
                     
+                        <ul>
                     {% for item in action_items %}
-                    <div class="action-item">
-                        <div class="action-header">
-                            <h3>{{ item.title }}</h3>
-                        </div>
-                        <div class="action-content">
-                            <div class="action-text">
-                                <div id="action-{{ loop.index }}" class="editor">{{ item.description }}</div>
-                            </div>
-                            
-                            {% for image in image_paths %}
-                            {% if image.title == item.title %}
-                            <div class="action-image">
-                                <img src="{{ image.image_path }}" alt="{{ item.title }}">
-                            </div>
-                            {% endif %}
+                            <li>{{ item.description }}</li>
                             {% endfor %}
-                        </div>
-                    </div>
-                    {% endfor %}
-                    
-                    {% if action_items|length == 0 %}
-                    <div class="action-item">
-                        <div class="action-header">
-                            <h3>No Action Items</h3>
-                        </div>
-                        <div class="action-content">
-                            <div class="action-text">
-                                <div id="action-empty" class="editor">No action items were found in the ADIME note.</div>
-                            </div>
-                        </div>
-                    </div>
+                        </ul>
                     {% endif %}
+                </div>
+                
+                <!-- Custom subsections for Intervention -->
+                <div id="custom-subsections-intervention"></div>
+                <div class="section-actions">
+                    <button class="add-subsection-btn" onclick="addCustomSubsection('intervention')">Add Subsection</button>
                 </div>
             </div>
             
             <!-- Monitoring Section -->
-            <div class="section">
-                <h2 class="section-title">✅ Follow-up Plan</h2>
-                <p class="section-guidance print-hide">Your next steps and how we'll measure your progress toward your nutrition goals.</p>
-                
-                <h3>Next Steps</h3>
-                {% if adime_data.monitoring.follow_up is defined %}
-                <div id="monitoring-followup" class="editor">{{ adime_data.monitoring.follow_up }}</div>
-                {% elif adime_data.monitoring is string %}
-                <div id="monitoring-followup" class="editor">{{ adime_data.monitoring }}</div>
-                {% else %}
-                <div id="monitoring-followup" class="editor">No monitoring data available.</div>
-                {% endif %}
-                
-                <h3>How We'll Measure Success</h3>
-                <div id="monitoring-metrics" class="editor">
-                    {% if adime_data.monitoring.metrics is defined %}
-                    {% if adime_data.monitoring.metrics is string %}
-                    {{ adime_data.monitoring.metrics }}
+            <div id="monitoring-section" class="section">
+                <h2 class="section-title">(M/E) Monitoring and Evaluation Plan:</h2>
+                <div id="monitoring-content" class="editor">
+                    {% if adime_data.monitoring.content %}
+                    {{ adime_data.monitoring.content }}
+                    {% elif adime_data.monitoring.summary %}
+                    {{ adime_data.monitoring.summary }}
+                    {% elif adime_data.monitoring is string %}
+                    {{ adime_data.monitoring }}
                     {% else %}
-                    <ul>
-                        {% for metric in adime_data.monitoring.metrics %}
-                        <li>{{ metric }}</li>
-                        {% endfor %}
-                    </ul>
-                    {% endif %}
-                    {% else %}
-                    No specific metrics available.
+                        {% if adime_data.monitoring.follow_up or adime_data.monitoring.metrics or adime_data.monitoring.timeline %}
+                            <ul>
+                                {% if adime_data.monitoring.follow_up %}
+                                <li>{{ adime_data.monitoring.follow_up }}</li>
+                                {% endif %}
+                                
+                                {% if adime_data.monitoring.metrics %}
+                                    {% if adime_data.monitoring.metrics is string %}
+                                    <li>{{ adime_data.monitoring.metrics }}</li>
+                                    {% else %}
+                                        {% for metric in adime_data.monitoring.metrics %}
+                                        <li>{{ metric }}</li>
+                                        {% endfor %}
+                                    {% endif %}
+                                {% endif %}
+                                
+                                {% if adime_data.monitoring.timeline %}
+                                <li>{{ adime_data.monitoring.timeline }}</li>
+                                {% endif %}
+                            </ul>
+                        {% endif %}
                     {% endif %}
                 </div>
                 
-                <h3>Timeline</h3>
-                <div id="monitoring-timeline" class="editor">
-                    {% if adime_data.monitoring.timeline is defined %}
-                    {{ adime_data.monitoring.timeline }}
-                    {% else %}
-                    No timeline specified.
-                    {% endif %}
+                <!-- Custom subsections for Monitoring -->
+                <div id="custom-subsections-monitoring"></div>
+                <div class="section-actions">
+                    <button class="add-subsection-btn" onclick="addCustomSubsection('monitoring')">Add Subsection</button>
                 </div>
             </div>
+            
+            <!-- Custom Sections -->
+            <div id="custom-sections"></div>
+            
+            <!-- Add Custom Section Button -->
+            <button id="add-section-btn" class="add-section-btn">Add New Section</button>
         </div>
         
         <!-- Hidden form for PDF generation -->
@@ -569,26 +766,13 @@
     
     <script>
         // Initialize Quill editors
-        const editorIds = [
-            'assessment-summary', 'assessment-weight', 'assessment-labs', 'assessment-intake',
-            'diagnosis-summary', 'diagnosis-problems',
-            'intervention-summary', 'short-term-goals', 'long-term-goals',
-            'monitoring-followup', 'monitoring-metrics', 'monitoring-timeline'
-        ];
-        
-        // Add action item editors
-        document.querySelectorAll('.action-items .editor').forEach(editor => {
-            if (editor.id) {
-                editorIds.push(editor.id);
-            }
-        });
-        
+        const editorElements = document.querySelectorAll('.editor');
         const editors = {};
+        let customEditorCounter = 0;
         
-        editorIds.forEach(id => {
-            const element = document.getElementById(id);
-            if (element) {
-                editors[id] = new Quill(`#${id}`, {
+        function initializeEditor(element) {
+            if (element.id) {
+                editors[element.id] = new Quill(`#${element.id}`, {
                     theme: 'snow',
                     modules: {
                         toolbar: [
@@ -598,313 +782,223 @@
                         ]
                     }
                 });
+                return editors[element.id];
+            }
+            return null;
+        }
+        
+        editorElements.forEach(element => {
+            initializeEditor(element);
+        });
+        
+        // Add custom field
+        function addCustomField(type, containerSelector) {
+            const customFieldLabel = prompt("Enter field label:", "");
+            if (customFieldLabel) {
+                const container = document.querySelector(containerSelector);
+                const fieldId = `custom-${type}-${Date.now()}`;
+                
+                const newRow = document.createElement('p');
+                newRow.className = 'data-row';
+                newRow.innerHTML = `
+                    <span class="data-label">${customFieldLabel}:</span>
+                    <span id="${fieldId}" class="editor"></span>
+                    <button class="remove-field-btn" title="Remove field" onclick="removeField(this.parentElement)">×</button>
+                `;
+                
+                container.appendChild(newRow);
+                
+                // Initialize editor for this field
+                initializeEditor(newRow.querySelector('.editor'));
+                
+                // If in view mode, hide the toolbar
+                if (document.getElementById('edit-toggle-btn').textContent === 'Enter Edit Mode') {
+                    newRow.querySelector('.ql-toolbar').style.display = 'none';
+                }
+            }
+        }
+        
+        // Remove field
+        function removeField(element) {
+            if (confirm("Are you sure you want to remove this field?")) {
+                element.remove();
+            }
+        }
+        
+        // Add custom subsection
+        function addCustomSubsection(sectionType) {
+            const subsectionTitle = prompt("Enter subsection title:", "");
+            if (subsectionTitle) {
+                const container = document.getElementById(`custom-subsections-${sectionType}`);
+                const subsectionId = `custom-subsection-${Date.now()}`;
+                
+                const newSubsection = document.createElement('div');
+                newSubsection.className = 'subsection';
+                newSubsection.innerHTML = `
+                    <div class="subsection-title">${subsectionTitle}</div>
+                    <div class="custom-fields-${subsectionId}"></div>
+                    <div class="add-field-container">
+                        <button class="add-field-btn" title="Add new field" onclick="addCustomField('${subsectionId}', '.custom-fields-${subsectionId}')">+</button>
+                        <button class="remove-field-btn" style="position: relative; margin-left: 10px;" title="Remove subsection" onclick="removeSubsection(this.parentElement.parentElement)">×</button>
+                    </div>
+                `;
+                
+                container.appendChild(newSubsection);
+            }
+        }
+        
+        // Remove subsection
+        function removeSubsection(element) {
+            if (confirm("Are you sure you want to remove this subsection?")) {
+                element.remove();
+            }
+        }
+        
+        // Add custom section
+        document.getElementById('add-section-btn').addEventListener('click', function() {
+            const sectionTitle = prompt("Enter section title:", "");
+            if (sectionTitle) {
+                const container = document.getElementById('custom-sections');
+                const sectionId = `custom-section-${Date.now()}`;
+                
+                const newSection = document.createElement('div');
+                newSection.className = 'section';
+                newSection.id = sectionId;
+                newSection.innerHTML = `
+                    <h2 class="section-title">${sectionTitle}</h2>
+                    <div id="${sectionId}-content" class="editor"></div>
+                    <div id="custom-subsections-${sectionId}"></div>
+                    <div class="section-actions">
+                        <button class="add-subsection-btn" onclick="addCustomSubsection('${sectionId}')">Add Subsection</button>
+                        <button class="remove-field-btn" style="position: relative; margin-left: 10px;" title="Remove section" onclick="removeSection('${sectionId}')">×</button>
+                    </div>
+                `;
+                
+                container.appendChild(newSection);
+                
+                // Initialize editor for this section
+                initializeEditor(document.getElementById(`${sectionId}-content`));
+                
+                // If in view mode, hide the toolbar
+                if (document.getElementById('edit-toggle-btn').textContent === 'Enter Edit Mode') {
+                    document.querySelector(`#${sectionId}-content .ql-toolbar`).style.display = 'none';
+                }
             }
         });
+        
+        // Remove section
+        function removeSection(sectionId) {
+            if (confirm("Are you sure you want to remove this section?")) {
+                document.getElementById(sectionId).remove();
+            }
+        }
         
         // Edit mode toggle
         const editToggleBtn = document.getElementById('edit-toggle-btn');
-        let editMode = true;
+        const editMode = true; // Start in edit mode by default
         
-        editToggleBtn.addEventListener('click', () => {
-            editMode = !editMode;
+        editToggleBtn.addEventListener('click', function() {
+            const editorContainers = document.querySelectorAll('.ql-toolbar');
+            const addButtons = document.querySelectorAll('.add-field-btn, .add-subsection-btn, .add-section-btn');
+            const removeButtons = document.querySelectorAll('.remove-field-btn');
             
-            if (editMode) {
-                editToggleBtn.textContent = 'Exit Edit Mode';
-                document.querySelectorAll('.ql-toolbar').forEach(toolbar => {
-                    toolbar.style.display = 'block';
-                });
-            } else {
-                editToggleBtn.textContent = 'Enter Edit Mode';
-                document.querySelectorAll('.ql-toolbar').forEach(toolbar => {
+            if (editToggleBtn.textContent === 'Exit Edit Mode') {
+                // Switch to view mode
+                editorContainers.forEach(toolbar => {
                     toolbar.style.display = 'none';
                 });
+                addButtons.forEach(btn => {
+                    btn.style.display = 'none';
+                });
+                removeButtons.forEach(btn => {
+                    btn.style.display = 'none';
+                });
+                editToggleBtn.textContent = 'Enter Edit Mode';
+            } else {
+                // Switch to edit mode
+                editorContainers.forEach(toolbar => {
+                    toolbar.style.display = 'block';
+                });
+                addButtons.forEach(btn => {
+                    btn.style.display = 'inline-block';
+                });
+                removeButtons.forEach(btn => {
+                    btn.style.display = 'block';
+                });
+                editToggleBtn.textContent = 'Exit Edit Mode';
             }
         });
         
-        // PDF generation
-        const generatePdfBtn = document.getElementById('generate-pdf-btn');
-        const pdfForm = document.getElementById('pdf-form');
-        const reportHtmlInput = document.getElementById('report-html');
-        
-        generatePdfBtn.addEventListener('click', () => {
-            // Temporarily hide edit buttons for clean HTML capture
-            document.querySelectorAll('.ql-toolbar').forEach(toolbar => {
+        // Generate PDF
+        document.getElementById('generate-pdf-btn').addEventListener('click', function() {
+            // Temporarily hide toolbars and edit controls
+            const editorContainers = document.querySelectorAll('.ql-toolbar');
+            const addButtons = document.querySelectorAll('.add-field-btn, .add-subsection-btn, .add-section-btn');
+            const removeButtons = document.querySelectorAll('.remove-field-btn');
+            
+            editorContainers.forEach(toolbar => {
                 toolbar.style.display = 'none';
             });
+            addButtons.forEach(btn => {
+                btn.style.display = 'none';
+            });
+            removeButtons.forEach(btn => {
+                btn.style.display = 'none';
+            });
             
-            // Get HTML content from the editor container
-            const editorContainer = document.getElementById('editor-container');
-            const contentClone = editorContainer.cloneNode(true);
+            // Clone content for PDF generation
+            const content = document.getElementById('editor-container').cloneNode(true);
             
-            // Remove guidance text and duplicated range info for PDF generation
-            contentClone.querySelectorAll('.print-hide').forEach(el => el.remove());
-            
-            // Remove empty editor containers and Quill-specific elements
-            contentClone.querySelectorAll('.ql-toolbar').forEach(el => el.remove());
-            contentClone.querySelectorAll('.ql-container').forEach(container => {
-                // If it has an associated editor, replace with the content directly
-                const editorId = container.id ? container.id.replace('container', 'editor') : null;
-                if (editorId && editors[editorId]) {
-                    const content = editors[editorId].root.innerHTML;
-                    if (content.trim() === '') {
-                        // If empty, remove the entire parent div to avoid empty boxes
-                        container.closest('.editor')?.remove();
+            // Clean up the content
+            content.querySelectorAll('.ql-editor').forEach(editor => {
+                if (editor.innerHTML.trim() === '<p><br></p>' || editor.innerHTML.trim() === '') {
+                    const parentRow = editor.closest('.data-row');
+                    if (parentRow) {
+                        parentRow.style.display = 'none';
                     } else {
-                        // Otherwise replace with clean HTML
-                        container.outerHTML = `<div class="clean-content">${content}</div>`;
+                        editor.parentElement.style.display = 'none';
                     }
                 }
             });
             
-            // Clean up any remaining editor divs that might be empty
-            contentClone.querySelectorAll('.editor').forEach(editor => {
-                // Remove if empty or contains only whitespace/minimal HTML
-                const content = editor.innerHTML;
-                const hasContent = content.replace(/<[^>]*>/g, '').trim().length > 0;
-                if (!hasContent) {
-                    console.log('DEBUG JS: Removing empty editor div');
-                    editor.remove();
+            // Remove empty subsections
+            content.querySelectorAll('.subsection').forEach(subsection => {
+                const visibleRows = subsection.querySelectorAll('.data-row[style="display: block"], .data-row:not([style])');
+                if (visibleRows.length === 0 && !subsection.querySelector('.editor:not(.ql-editor)')) {
+                    subsection.style.display = 'none';
                 }
             });
             
-            // Debug: Log number of images before fixing paths
-            const imagesBefore = contentClone.querySelectorAll('img');
-            console.log(`DEBUG JS: Found ${imagesBefore.length} images before path fixing`);
-            imagesBefore.forEach((img, i) => {
-                console.log(`DEBUG JS: Image ${i} before fix: src=${img.src}, alt=${img.alt}`);
+            // Remove controls from PDF content
+            content.querySelectorAll('.section-actions, #add-section-btn').forEach(el => {
+                el.remove();
             });
             
-            // Ensure all image paths are absolute
-            contentClone.querySelectorAll('img').forEach(img => {
-                // Fix relative image paths to be absolute for proper rendering in PDF
-                const originalSrc = img.src;
-                if (img.src.startsWith('/')) {
-                    const baseUrl = window.location.origin;
-                    img.src = baseUrl + img.src;
-                    console.log(`DEBUG JS: Fixed image path from ${originalSrc} to ${img.src}`);
-                } else {
-                    console.log(`DEBUG JS: Image path already absolute: ${img.src}`);
-                }
-            });
+            // Set form values and submit
+            document.getElementById('report-html').value = content.innerHTML;
+            document.getElementById('pdf-form').submit();
             
-            // Debug: Verify images after fixing paths
-            const imagesAfter = contentClone.querySelectorAll('img');
-            console.log(`DEBUG JS: Found ${imagesAfter.length} images after path fixing`);
-            imagesAfter.forEach((img, i) => {
-                console.log(`DEBUG JS: Image ${i} after fix: src=${img.src}, alt=${img.alt}`);
-            });
-            
-            // Create HTML content for PDF
-            const htmlContent = `
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <meta charset="UTF-8">
-                    <title>My Nutrition Plan</title>
-                    <style>
-                        body {
-                            font-family: Arial, sans-serif;
-                            line-height: 1.4;
-                            color: #333;
-                            font-size: 11pt;
-                        }
-                        .section {
-                            margin-bottom: 20px;
-                        }
-                        .section-title {
-                            color: #3498db;
-                            border-bottom: 1px solid #3498db;
-                            padding-bottom: 3px;
-                            margin-bottom: 10px;
-                            font-size: 16pt;
-                        }
-                        .assessment-grid {
-                            display: grid;
-                            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-                            gap: 15px;
-                            margin-top: 10px;
-                        }
-                        .assessment-card {
-                            border: 1px solid #ddd;
-                            border-radius: 6px;
-                            padding: 10px;
-                        }
-                        .assessment-card h3 {
-                            margin-top: 0;
-                            border-bottom: 1px solid #eee;
-                            padding-bottom: 5px;
-                            font-size: 13pt;
-                            margin-bottom: 8px;
-                        }
-                        .action-items {
-                            display: grid;
-                            grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
-                            gap: 15px;
-                            margin-top: 10px;
-                        }
-                        .action-item {
-                            border: 1px solid #ddd;
-                            border-radius: 6px;
-                            overflow: hidden;
-                            margin-bottom: 15px;
-                        }
-                        .action-header {
-                            background-color: #3498db;
-                            color: white;
-                            padding: 8px 12px;
-                        }
-                        .action-header h3 {
-                            margin: 0;
-                            font-size: 13pt;
-                        }
-                        .action-content {
-                            padding: 12px;
-                            display: flex;
-                            flex-direction: row;
-                            align-items: flex-start;
-                            gap: 15px;
-                        }
-                        .action-text {
-                            flex: 1;
-                            min-width: 0;
-                            width: 50%;
-                        }
-                        .action-image {
-                            margin-top: 0;
-                            text-align: center;
-                            flex: 1;
-                            min-width: 0;
-                            max-width: 45%;
-                        }
-                        .action-image img {
-                            max-width: 100%;
-                            max-height: 150px;
-                            border-radius: 6px;
-                            object-fit: contain;
-                        }
-                        .header {
-                            margin-bottom: 20px;
-                        }
-                        .header h1 {
-                            color: #2c3e50;
-                            margin: 0;
-                            padding-bottom: 8px;
-                            border-bottom: 1px solid #eee;
-                            font-size: 18pt;
-                        }
-                        /* Fix for empty boxes */
-                        .editor {
-                            border: none;
-                            padding: 0;
-                            min-height: 0;
-                            margin-bottom: 8px;
-                        }
-                        .clean-content {
-                            margin-bottom: 8px;
-                        }
-                        /* Style for normal ranges */
-                        .range-info {
-                            background-color: #f0f7ff;
-                            border-left: 3px solid #3498db;
-                            padding: 6px 10px;
-                            font-size: 0.9em;
-                            color: #555;
-                            margin-top: 8px;
-                            border-radius: 3px;
-                        }
-                        /* Style for goals section */
-                        .goals-section {
-                            display: grid;
-                            grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
-                            gap: 15px;
-                            margin: 10px 0;
-                        }
-                        .goal-card {
-                            border: 1px solid #ddd;
-                            border-radius: 6px;
-                            padding: 10px;
-                        }
-                        .goal-card h3 {
-                            margin-top: 0;
-                            border-bottom: 1px solid #eee;
-                            padding-bottom: 5px;
-                            font-size: 13pt;
-                        }
-                        h3 {
-                            font-size: 13pt;
-                            margin-top: 12px;
-                            margin-bottom: 8px;
-                        }
-                        ul, ol {
-                            margin-top: 5px;
-                            margin-bottom: 5px;
-                            padding-left: 20px;
-                        }
-                        /* Hide elements with print-hide class */
-                        .print-hide {
-                            display: none !important;
-                        }
-                        /* Style for normal ranges */
-                        .range-info {
-                            background-color: #f0f7ff;
-                            border-left: 3px solid #3498db;
-                            padding: 6px 10px;
-                            font-size: 0.9em;
-                            color: #555;
-                            margin-top: 8px;
-                            border-radius: 3px;
-                        }
-                        /* Style for goals section */
-                        .goals-section {
-                            display: grid;
-                            grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
-                            gap: 15px;
-                            margin: 10px 0;
-                        }
-                        .goal-card {
-                            border: 1px solid #ddd;
-                            border-radius: 6px;
-                            padding: 10px;
-                        }
-                        .goal-card h3 {
-                            margin-top: 0;
-                            border-bottom: 1px solid #eee;
-                            padding-bottom: 5px;
-                            font-size: 13pt;
-                        }
-                        /* Set page margins */
-                        @page {
-                            margin: 1cm 1.5cm;
-                        }
-                    </style>
-                </head>
-                <body>
-                    <div class="header">
-                        <h1>My Personal Nutrition Plan</h1>
-                    </div>
-                    ${contentClone.innerHTML}
-                </body>
-                </html>
-            `;
-            
-            // Debug: Check for images in the final HTML content
-            const imgCount = (htmlContent.match(/<img[^>]*>/g) || []).length;
-            console.log(`DEBUG JS: Final HTML has ${imgCount} img tags`);
-            
-            reportHtmlInput.value = htmlContent;
-            
-            // Restore edit buttons if in edit mode
-            if (editMode) {
-                document.querySelectorAll('.ql-toolbar').forEach(toolbar => {
+            // Restore toolbars if in edit mode
+            if (editToggleBtn.textContent === 'Exit Edit Mode') {
+                editorContainers.forEach(toolbar => {
                     toolbar.style.display = 'block';
                 });
+                addButtons.forEach(btn => {
+                    btn.style.display = 'inline-block';
+                });
+                removeButtons.forEach(btn => {
+                    btn.style.display = 'block';
+                });
             }
-            
-            // Debug: Check form data before submitting
-            console.log(`DEBUG JS: Form data size: ${reportHtmlInput.value.length} bytes`);
-            
-            // Submit the form to generate PDF
-            pdfForm.submit();
+        });
+        
+        // Initialize the page in edit mode
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show all edit controls initially
+            const addButtons = document.querySelectorAll('.add-field-btn, .add-subsection-btn, .add-section-btn');
+            addButtons.forEach(btn => {
+                btn.style.display = 'inline-block';
+            });
         });
     </script>
 </body>

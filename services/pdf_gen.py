@@ -6,6 +6,7 @@ from weasyprint import HTML, CSS
 from jinja2 import Environment, FileSystemLoader
 from typing import Optional
 import re
+from datetime import datetime
 
 # Set the directory for PDF storage
 PDF_DIR = "static/pdfs"
@@ -45,6 +46,16 @@ async def generate_pdf(html_content: str) -> str:
             # Replace in HTML
             html_content = html_content.replace(f'src="{img_src}"', f'src="{file_url}"')
             print(f"DEBUG: Replaced image path {img_src} with {file_url}")
+    
+    # Cleanup HTML - remove any empty or unnecessary elements
+    # Remove buttons and other control elements that shouldn't be in the PDF
+    html_content = re.sub(r'<button[^>]*>.*?</button>', '', html_content)
+    
+    # Remove any elements with display:none style
+    html_content = re.sub(r'<[^>]*style="[^"]*display:\s*none[^"]*"[^>]*>.*?</[^>]*>', '', html_content)
+    
+    # Remove empty editor divs (those with just <p><br></p> or similar)
+    html_content = re.sub(r'<div[^>]*class="[^"]*editor[^"]*"[^>]*>\s*<p>\s*<br>\s*</p>\s*</div>', '', html_content)
     
     # Check if the replacement worked
     fixed_img_tags = re.findall(r'<img[^>]*src="([^"]*)"[^>]*>', html_content)
@@ -127,7 +138,7 @@ async def generate_pdf(html_content: str) -> str:
         # Custom CSS for PDF rendering
         css = CSS(string="""
             @page {
-                margin: 1cm;
+                margin: 2cm 1.5cm;
                 @top-center {
                     content: "ADIME Report";
                     font-size: 10pt;
@@ -141,15 +152,45 @@ async def generate_pdf(html_content: str) -> str:
                 font-family: Arial, sans-serif;
                 line-height: 1.5;
                 color: #333;
+                font-size: 11pt;
             }
             h1 {
                 color: #2c3e50;
-                border-bottom: 1px solid #eee;
-                padding-bottom: 5px;
+                margin-top: 0;
+                margin-bottom: 15px;
+                font-size: 18pt;
             }
-            h2 {
-                color: #3498db;
-                margin-top: 20px;
+            h2.section-title {
+                color: #2c3e50;
+                font-size: 16pt;
+                font-weight: bold;
+                margin-bottom: 10px;
+                margin-top: 25px;
+            }
+            .patient-info {
+                margin-bottom: 20px;
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            .patient-info p {
+                margin: 5px 0;
+            }
+            .data-label {
+                font-weight: bold;
+                display: inline-block;
+                min-width: 200px;
+            }
+            .data-row {
+                margin-bottom: 5px;
+            }
+            .subsection {
+                margin-top: 15px;
+                margin-bottom: 15px;
+            }
+            .subsection-title {
+                font-weight: bold;
+                margin-bottom: 8px;
             }
             img {
                 max-width: 90%;
@@ -158,15 +199,9 @@ async def generate_pdf(html_content: str) -> str:
                 margin: 15px auto;
                 border-radius: 5px;
             }
-            .action-item {
-                background-color: #f9f9f9;
-                padding: 15px;
-                margin: 15px 0;
-                border-left: 4px solid #3498db;
-                border-radius: 3px;
-            }
             .section {
                 margin-bottom: 30px;
+                page-break-inside: avoid;
             }
             /* Fix for empty editor containers */
             .editor {
@@ -187,6 +222,53 @@ async def generate_pdf(html_content: str) -> str:
                 margin: 0 !important;
                 padding: 0 !important;
                 height: 0 !important;
+            }
+            
+            /* Remove Quill editor-specific styling */
+            .ql-container, .ql-editor {
+                border: none !important;
+                padding: 0 !important;
+            }
+            
+            /* Style list elements */
+            ul, ol {
+                margin-top: 5px;
+                margin-bottom: 10px;
+                padding-left: 20px;
+            }
+            
+            li {
+                margin-bottom: 3px;
+            }
+            
+            /* Hide any remaining UI controls */
+            .add-field-btn, .remove-field-btn, .add-subsection-btn, .add-section-btn, .section-actions, .add-field-container {
+                display: none !important;
+            }
+            
+            /* Style custom fields */
+            .custom-fields-patient p, 
+            .custom-fields-demographics p,
+            .custom-fields-dietary p,
+            .custom-fields-diet p,
+            .custom-fields-medical p,
+            .custom-fields-nfpe p,
+            .custom-fields-muscle p,
+            .custom-fields-hydration p,
+            .custom-fields-nutrition p,
+            [class^="custom-fields-"] p {
+                margin: 5px 0;
+            }
+            
+            /* Style custom subsections */
+            [id^="custom-subsections-"] .subsection {
+                margin-top: 15px;
+                margin-bottom: 15px;
+            }
+            
+            /* Style custom sections */
+            #custom-sections .section {
+                margin-bottom: 30px;
             }
         """)
         
@@ -223,6 +305,10 @@ def render_template_to_html(template_name: str, context: dict) -> str:
     # Set up Jinja2 environment
     env = Environment(loader=FileSystemLoader("templates"))
     template = env.get_template(template_name)
+    
+    # Add current datetime to context if not already present
+    if 'now' not in context:
+        context['now'] = datetime.now()
     
     # Render the template
     return template.render(**context) 

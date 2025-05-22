@@ -213,6 +213,7 @@ async def generate_image_for_action(action_item: Dict[str, str], prompt: str) ->
         - Have a clean, minimalist design focused on the recommended foods
         - No text overlay necessary (text will be added separately)
         - Designed from the patient's perspective (what "I" should eat/do)
+        - Be specific to the patient's health context
         
         The specific nutritional recommendation is:
         {prompt}

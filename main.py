@@ -6,6 +6,7 @@ from fastapi.templating import Jinja2Templates
 import uvicorn
 from pathlib import Path
 from dotenv import load_dotenv
+from datetime import datetime
 
 # Import services
 from services.parse_adime import parse_adime_text
@@ -79,7 +80,8 @@ async def upload_adime(request: Request,
     context = {
         "request": request,
         "adime_data": adime_data,
-        "image_paths": image_paths
+        "image_paths": image_paths,
+        "now": datetime.now()
     }
     
     print("DEBUG: Rendering report_template.html")
